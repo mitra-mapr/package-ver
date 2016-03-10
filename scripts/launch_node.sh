@@ -1,19 +1,23 @@
 #!/bin/bash
-
+WORKSPACE=$1
+if [ -z "$1" ]; then
+  echo Please provide a path
+  exit 1
+fi
 
 # Launch the Containers and get IP of the node
-centos_containerid=$(docker run -d --privileged  -v /root/package-ver:/package_ver pkgverify_centos:6.7 /package_ver/scripts/centos_prep.sh)
-ubuntu_containerid=$(docker run -d --privileged  -v /root/package-ver:/package_ver pkgverify_ubuntu:12.04 /package_ver/scripts/ubuntu_prep.sh)
+centos_containerid=$(docker run -d --privileged  -v $WORKSPACE/package-ver:/package_ver maprdocker.lab/pkgverify_centos:6.7 /package_ver/scripts/centos_prep.sh)
+ubuntu_containerid=$(docker run -d --privileged  -v $WORKSPACE/package-ver:/package_ver maprdocker.lab/pkgverify_ubuntu:12.04 /package_ver/scripts/ubuntu_prep.sh)
 
 
-sleep 10
+sleep 20
 centos_containerip=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' ${centos_containerid} )
 ubuntu_containerip=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' ${ubuntu_containerid} )
 #echo " Container Node IP : $containerip		login:root   password:mapr"
 
 sleep 60
 
-for line in $(cat /root/package-ver/scripts/list)
+for line in $(cat $WORKSPACE/package-ver/scripts/list)
 do
 	echo $line
 	case "$line" in 
