@@ -1,0 +1,40 @@
+{"components": [{
+      "name":"hbase",
+      "version":"1.1.1",
+      "ecosystems": [
+        {
+          "version":"4.x",
+          "os":[{
+            "redhat":"True",
+            "ubuntu":"true"
+          }]
+        },
+        {
+          "version":"5.x",
+          "os":[{
+            "redhat":"true",
+            "ubuntu":"False"
+          }]
+        }]
+    },
+    {
+      "name":"sentry",
+      "version":"1.6.0",
+      "ecosystems": [
+        {
+          "version":"4.x",
+          "os":[{
+            "redhat":"true",
+            "ubuntu":"true"
+          }]
+        },
+        {
+          "version":"5.x",
+          "os":[{
+            "redhat":"true",
+            "ubuntu":"true"
+          }]
+        }]
+    }
+  ]
+}

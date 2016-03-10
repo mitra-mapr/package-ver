@@ -1,0 +1,18 @@
+#!/bin/bash
+
+
+# Launch the Container and get IP of the node
+containerid=$(docker run -d --privileged  -v /root/package-ver:/package_ver pkgverify_centos:6.7 /package_ver/scripts/centos_prep.sh)
+
+sleep 10
+containerip=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' ${containerid} )
+echo " Container Node IP : $containerip		login:root   password:mapr"
+
+sleep 60
+
+for line in $(cat /root/package-ver/scripts/list.centos)
+do
+	echo $line
+	sshpass -p "mapr" ssh -o LogLevel=quiet -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${containerip} /package_ver/scripts/centos_verify.sh $line $containerid 
+
+done

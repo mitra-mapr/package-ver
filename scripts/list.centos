@@ -1,0 +1,4 @@
+mapr-flume:1.5.0.201503251710-1:5.x:centos
+mapr-flume:1.6.0.201509301714-1:5.x:centos
+mapr-hbase:0.98.9.201503251553-1:5.x:centos
+mapr-hbase:0.98.12.201507081709-1:5.x:centos
