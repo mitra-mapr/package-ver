@@ -5,9 +5,17 @@ import sys
 import os
 import urllib2
 import re
+import argparse
 
 centospatt = "redhat|centos|rpm"
 ubuntupatt = "ubuntu|deb|apt"
+
+
+def setup():
+    parser = argparse.ArgumentParser(description="Get package list from URL")
+    parser.add_argument('URL', type=str)
+    args = parser.parse_args()
+    return args
 
 
 def find_centos_rpms(url):
@@ -20,9 +28,9 @@ def find_centos_rpms(url):
 
     pattern = "(?P<package_name>[a-zA-Z\-]+\d?)-(?P<version>\d[\.\d\-]+\d)"
     for anchor in soup.findAll('a', href=True, string=re.compile("rpm", re.IGNORECASE)):
-        #print anchor['href']
+        # print anchor['href']
         match = re.search(pattern, anchor['href'])
-        print "%s:%s:%s:%s" % (match.group('package_name') , match.group('version') , ecomatch.group(0), "centos")
+        print "%s:%s:%s:%s" % (match.group('package_name'), match.group('version'), ecomatch.group(0), "centos")
 
 
 def find_ubuntu_debs(url):
@@ -38,14 +46,17 @@ def find_ubuntu_debs(url):
     for line in data:
         packagematch = re.search(packagepatt, line)
         if packagematch:
-            #print packagematch.group(0)
-            versionmatch = re.search(versionpatt, data[i+5])
+            # print packagematch.group(0)
+            versionmatch = re.search(versionpatt, data[i + 5])
             print "%s:%s:%s:%s" % (packagematch.group(0), versionmatch.group(0), ecomatch.group(0), "ubuntu")
         i += 1
 
-def main():
 
-    url = sys.argv[1]
+def main(args):
+
+    # url = sys.argv[1]
+    print args.URL
+    url = args.URL
 
     if re.search(centospatt, url):
         find_centos_rpms(url)
@@ -56,4 +67,5 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    args = setup()
+    main(args)
