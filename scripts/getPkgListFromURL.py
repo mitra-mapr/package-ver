@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 import sys
 import os
 import urllib2
+import base64
 import re
 import argparse
 
@@ -14,12 +15,23 @@ ubuntupatt = "ubuntu|deb|apt"
 def setup():
     parser = argparse.ArgumentParser(description="Get package list from URL")
     parser.add_argument('URL', type=str)
+    parser.add_argument('--user', type=str, required=False)
+    parser.add_argument('--pw', type=str, required=False)
     args = parser.parse_args()
     return args
 
 
-def find_centos_rpms(url):
-    page = urllib2.urlopen(url).read()
+def openPage(url, username, password):
+    request = urllib2.Request(url)
+    base64String = base64.standard_b64encode('%s:%s' % (username, password))
+    request.add_header("Authorization", "Basic %s" % base64String)
+    page = urllib2.urlopen(request)
+    return page
+
+
+def find_centos_rpms(args):
+    url = args.URL   
+    page = openPage(url, args.user, args.pw)
     soup = BeautifulSoup(page, 'html.parser')
     soup.prettify()
 
@@ -33,9 +45,12 @@ def find_centos_rpms(url):
         print "%s:%s:%s:%s" % (match.group('package_name'), match.group('version'), ecomatch.group(0), "centos")
 
 
-def find_ubuntu_debs(url):
-    page = urllib2.urlopen(url).read()
-    data = page.split("\n")
+def find_ubuntu_debs(args):
+    url = args.URL
+    page = openPage(url, args.user, args.pw)
+    soup = BeautifulSoup(page, 'html.parser')
+    soup.prettify()
+    data = soup.get_text().split('\n')
 
     ecopatt = "([45]\.x)"
     ecomatch = re.search(ecopatt, url)
@@ -53,15 +68,12 @@ def find_ubuntu_debs(url):
 
 
 def main(args):
-
-    # url = sys.argv[1]
-    print args.URL
     url = args.URL
 
     if re.search(centospatt, url):
-        find_centos_rpms(url)
+        find_centos_rpms(args)
     elif re.search(ubuntupatt, url):
-        find_ubuntu_debs(url)
+        find_ubuntu_debs(args)
     else:
         print "Unable to determine the type of URL"
 
